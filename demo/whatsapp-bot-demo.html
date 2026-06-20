@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Beit Barsoum — WhatsApp Bot Demo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #faf9f5;
+    color: #28261b;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    background: #fff;
+    border-bottom: 1px solid #e8e6dc;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo-mark {
+    width: 44px; height: 44px;
+    background: #28261b;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .page-header h1 { font-size: 17px; font-weight: 700; color: #28261b; }
+  .page-header p { font-size: 12px; color: #6b6a60; margin-top: 2px; }
+  .badge {
+    margin-left: auto;
+    background: #e8f5e9;
+    color: #2e7d32;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* ── Desktop layout ── */
+  .page-body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 40px;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 28px;
+  }
+
+  /* ── Sidebar (desktop) ── */
+  .sidebar { display: flex; flex-direction: column; gap: 0; }
+  .sidebar-label { font-size: 11px; font-weight: 700; color: #93917f; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .scenario-btn {
+    display: block; width: 100%;
+    background: #fff;
+    border: 1.5px solid #e8e6dc;
+    border-radius: 10px;
+    padding: 11px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+  }
+  .scenario-btn:hover { border-color: #d97757; background: #fff8f5; }
+  .scenario-btn.active { border-color: #d97757; background: #fff3ee; }
+  .scenario-btn .sc-lang { font-size: 11px; font-weight: 600; color: #d97757; margin-bottom: 2px; }
+  .scenario-btn .sc-title { font-size: 13px; font-weight: 600; color: #28261b; }
+  .scenario-btn .sc-desc { font-size: 11px; color: #93917f; margin-top: 2px; }
+
+  .sidebar-info {
+    margin-top: 20px;
+    background: #fff;
+    border: 1px solid #e8e6dc;
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .sidebar-info h3 { font-size: 11px; font-weight: 700; color: #93917f; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .info-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+  .info-row .dot { width: 6px; height: 6px; background: #d97757; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .info-row span { font-size: 12px; color: #6b6a60; }
+
+  /* ── Mobile scenario tabs ── */
+  .scenario-tabs {
+    display: none;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 0 16px 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .scenario-tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex-shrink: 0;
+    background: #fff;
+    border: 1.5px solid #e8e6dc;
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 12px; font-weight: 600;
+    color: #6b6a60;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { border-color: #d97757; background: #fff3ee; color: #d97757; }
+
+  /* ── Center column ── */
+  .center-col {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Phone frame ── */
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .phone-frame {
+    width: 360px;
+    background: #111;
+    border-radius: 44px;
+    padding: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05);
+  }
+  .phone-notch {
+    width: 120px; height: 26px;
+    background: #111;
+    border-radius: 0 0 16px 16px;
+    margin: 0 auto 4px;
+  }
+  .phone-screen {
+    background: #ece5dd;
+    border-radius: 36px;
+    overflow: hidden;
+    height: 640px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* WhatsApp chrome */
+  .wa-header {
+    background: #075e54;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .wa-back { color: rgba(255,255,255,0.8); font-size: 18px; }
+  .wa-avatar {
+    width: 34px; height: 34px;
+    background: #25d366;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+  .wa-info { flex: 1; min-width: 0; }
+  .wa-name { font-size: 14px; font-weight: 600; color: #fff; }
+  .wa-status { font-size: 10px; color: rgba(255,255,255,0.7); }
+  .wa-icons { color: rgba(255,255,255,0.8); font-size: 16px; display: flex; gap: 12px; }
+
+  .wa-date-chip {
+    text-align: center;
+    padding: 8px;
+    flex-shrink: 0;
+  }
+  .wa-date-chip span {
+    background: rgba(255,255,255,0.85);
+    font-size: 11px; color: #555;
+    padding: 3px 10px; border-radius: 8px;
+  }
+
+  .wa-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    scroll-behavior: smooth;
+  }
+  .wa-messages::-webkit-scrollbar { width: 4px; }
+  .wa-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
+
+  .msg {
+    max-width: 82%;
+    font-size: 13px;
+    line-height: 1.45;
+    animation: fadeIn 0.25s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+
+  .msg.user {
+    align-self: flex-end;
+    background: #dcf8c6;
+    border-radius: 10px 2px 10px 10px;
+    padding: 8px 10px 16px;
+    position: relative;
+  }
+  .msg.bot {
+    align-self: flex-start;
+    background: #fff;
+    border-radius: 2px 10px 10px 10px;
+    padding: 8px 10px 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    position: relative;
+  }
+  .msg.system {
+    align-self: center;
+    background: rgba(255,255,255,0.75);
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 11px; color: #666;
+    text-align: center;
+    max-width: 90%;
+  }
+  .msg-time {
+    position: absolute;
+    bottom: 3px; right: 8px;
+    font-size: 10px; color: #999;
+  }
+  .msg.user .msg-time { color: #6cad4a; }
+  .msg-check { font-size: 10px; color: #53bdeb; }
+
+  .typing-indicator {
+    align-self: flex-start;
+    background: #fff;
+    border-radius: 2px 10px 10px 10px;
+    padding: 10px 14px;
+    display: none;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  }
+  .typing-indicator.show { display: flex; }
+  .typing-dot {
+    width: 6px; height: 6px;
+    background: #aaa; border-radius: 50%;
+    animation: typingBounce 1.2s infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+  }
+
+  .wa-input {
+    background: #f0f0f0;
+    padding: 8px 10px;
+    display: flex; gap: 8px; align-items: center;
+    flex-shrink: 0;
+    border-top: 1px solid #ddd;
+  }
+  .wa-input input {
+    flex: 1; background: #fff; border: none;
+    border-radius: 20px; padding: 7px 14px;
+    font-size: 13px; outline: none; color: #28261b;
+  }
+  .wa-send {
+    width: 34px; height: 34px;
+    background: #075e54; border: none; border-radius: 50%;
+    color: #fff; font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Handover alert ── */
+  .handover-toast {
+    width: 360px;
+    background: #fff;
+    border: 1.5px solid #d97757;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: none;
+    animation: slideUp 0.3s ease;
+  }
+  .handover-toast.show { display: block; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .toast-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .toast-icon { font-size: 18px; }
+  .toast-title { font-size: 13px; font-weight: 700; color: #28261b; }
+  .toast-badge { margin-left: auto; background: #fff3ee; color: #d97757; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+  .toast-body { font-size: 12px; color: #6b6a60; line-height: 1.5; }
+  .toast-body strong { color: #28261b; }
+
+  /* ── Controls ── */
+  .demo-controls {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    justify-content: center; width: 360px;
+  }
+  .ctrl-btn {
+    background: #fff;
+    border: 1.5px solid #e8e6dc;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 12px; color: #6b6a60;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .ctrl-btn:hover { border-color: #d97757; color: #d97757; }
+  .ctrl-btn.primary {
+    background: #d97757; border-color: #d97757;
+    color: #fff; font-weight: 600;
+  }
+  .ctrl-btn.primary:hover { background: #c4663f; }
+
+  /* ── Right panel ── */
+  .right-panel { display: flex; flex-direction: column; gap: 18px; }
+
+  .panel-card {
+    background: #fff;
+    border: 1px solid #e8e6dc;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .panel-card-header {
+    padding: 13px 16px;
+    border-bottom: 1px solid #e8e6dc;
+  }
+  .panel-card-header h3 { font-size: 13px; font-weight: 700; color: #28261b; }
+  .panel-card-header p { font-size: 11px; color: #93917f; margin-top: 1px; }
+  .panel-card-body { padding: 16px; }
+
+  /* Architecture */
+  .arch-flow {
+    display: flex; align-items: center;
+    flex-wrap: wrap; gap: 0; row-gap: 10px;
+  }
+  .arch-node {
+    background: #faf9f5;
+    border: 1.5px solid #dcd9cc;
+    border-radius: 10px;
+    padding: 9px 12px;
+    text-align: center; min-width: 80px;
+  }
+  .arch-node .node-icon { font-size: 18px; margin-bottom: 3px; }
+  .arch-node .node-label { font-size: 11px; font-weight: 600; color: #28261b; }
+  .arch-node .node-sub { font-size: 10px; color: #93917f; margin-top: 1px; }
+  .arch-node.highlight { border-color: #d97757; background: #fff8f5; }
+  .arch-arrow { font-size: 16px; color: #93917f; padding: 0 4px; flex-shrink: 0; }
+
+  /* Pricing */
+  .pricing-section { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .pricing-block h4 { font-size: 11px; font-weight: 700; color: #93917f; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .price-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #f0ede4; }
+  .price-row:last-child { border-bottom: none; }
+  .price-row .label { font-size: 12px; color: #28261b; }
+  .price-row .value { font-size: 12px; font-weight: 600; color: #28261b; }
+  .price-row .value.free { color: #2e7d32; }
+  .price-row .value.accent { color: #d97757; }
+  .price-total { margin-top: 8px; background: #faf9f5; border-radius: 8px; padding: 9px 12px; display: flex; justify-content: space-between; }
+  .price-total .label { font-size: 13px; font-weight: 700; }
+  .price-total .value { font-size: 13px; font-weight: 700; color: #d97757; }
+
+  /* Features */
+  .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .feature-item { display: flex; gap: 8px; align-items: flex-start; }
+  .feature-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .feature-text .ft { font-size: 12px; font-weight: 600; color: #28261b; }
+  .feature-text .fs { font-size: 11px; color: #93917f; margin-top: 1px; }
+
+  /* Language pills */
+  .lang-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .lang-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: #faf9f5; border: 1.5px solid #e8e6dc;
+    border-radius: 20px; padding: 6px 12px;
+    font-size: 12px; font-weight: 600;
+  }
+
+  /* ── MOBILE ─────────────────────────── */
+  @media (max-width: 768px) {
+    .page-header { padding: 12px 16px; }
+    .page-header h1 { font-size: 15px; }
+    .page-header p { display: none; }
+
+    .page-body {
+      grid-template-columns: 1fr;
+      padding: 16px 0 32px;
+      gap: 0;
+    }
+
+    /* Hide desktop sidebar, show tab strip */
+    .sidebar { display: none; }
+    .scenario-tabs { display: flex; }
+
+    /* Center column: single column */
+    .center-col {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 0 16px;
+    }
+
+    /* Phone frame: full-width, scaled */
+    .phone-wrap { width: 100%; }
+    .phone-frame {
+      width: 100%;
+      max-width: 360px;
+      border-radius: 36px;
+      padding: 10px;
+    }
+    .phone-notch { width: 100px; height: 22px; }
+    .phone-screen {
+      border-radius: 28px;
+      height: min(600px, 68vh);
+    }
+
+    .handover-toast { width: 100%; max-width: 360px; }
+    .demo-controls { width: 100%; }
+
+    /* Right panel: stack below, collapsible */
+    .right-panel { gap: 12px; }
+    .panel-card-body { padding: 14px; }
+    .arch-flow { gap: 0; }
+    .arch-node { min-width: 66px; padding: 7px 8px; }
+    .arch-node .node-icon { font-size: 15px; }
+    .arch-arrow { font-size: 13px; padding: 0 2px; }
+    .pricing-section { grid-template-columns: 1fr; gap: 16px; }
+    .feature-grid { grid-template-columns: 1fr; gap: 8px; }
+
+    /* Workshops table mobile */
+    .workshops-table { font-size: 12px; }
+    .workshops-table th, .workshops-table td { padding: 7px 8px; }
+  }
+
+  @media (max-width: 400px) {
+    .phone-frame { border-radius: 28px; padding: 8px; }
+    .phone-screen { border-radius: 22px; }
+    .phone-notch { width: 80px; }
+  }
+
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ── Shopify arch node ── */
+  .arch-col { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .arch-shopify {
+    background: #eef4ff; border: 1.5px solid #185fa5;
+    border-radius: 10px; padding: 7px 10px; text-align: center; min-width: 80px;
+  }
+  .arch-shopify .node-icon { font-size: 16px; margin-bottom: 2px; }
+  .arch-shopify .node-label { font-size: 10px; font-weight: 700; color: #185fa5; }
+  .arch-shopify .node-sub { font-size: 9px; color: #185fa5; opacity: 0.7; margin-top: 1px; }
+  .arch-sync-arrow { font-size: 11px; color: #185fa5; line-height: 1; }
+
+  /* ── Needs checklist ── */
+  .need-list { display: flex; flex-direction: column; gap: 10px; }
+  .need-item { display: flex; gap: 10px; align-items: flex-start; }
+  .need-icon { font-size: 12px; flex-shrink: 0; margin-top: 2px; }
+  .need-content {}
+  .need-title { font-size: 12px; font-weight: 600; color: #28261b; }
+  .need-desc { font-size: 11px; color: #6b6a60; margin-top: 2px; line-height: 1.4; }
+
+  /* ── Voice training steps ── */
+  .voice-steps { display: flex; flex-direction: column; gap: 10px; }
+  .voice-step { display: flex; gap: 10px; align-items: flex-start; }
+  .vs-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #d97757; color: #fff;
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .vs-content {}
+  .vs-title { font-size: 12px; font-weight: 600; color: #28261b; }
+  .vs-desc { font-size: 11px; color: #6b6a60; margin-top: 2px; }
+
+  /* ── Workshops table ── */
+  .workshops-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+  }
+  .workshops-table th {
+    font-size: 11px; font-weight: 700; color: #93917f;
+    text-transform: uppercase; letter-spacing: 0.4px;
+    padding: 0 10px 8px; text-align: left;
+    border-bottom: 1px solid #e8e6dc;
+  }
+  .workshops-table td {
+    padding: 9px 10px; border-bottom: 1px solid #f0ede4;
+    vertical-align: top;
+  }
+  .workshops-table tr:last-child td { border-bottom: none; }
+  .wk-name { font-weight: 600; color: #28261b; }
+  .wk-price { font-weight: 700; color: #d97757; white-space: nowrap; }
+  .wk-dates { color: #6b6a60; }
+  .sold-out { color: #93917f; text-decoration: line-through; font-size: 11px; }
+  .avail { color: #2e7d32; font-weight: 600; font-size: 11px; }
+  .escalate-tag {
+    display: inline-block;
+    background: #fff3ee; color: #d97757;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="page-header">
+  <div class="logo-mark">💍</div>
+  <div>
+    <h1>Beit Barsoum — WhatsApp AI Bot</h1>
+    <p>Interactive demo · Built by George Tadros</p>
+  </div>
+  <div class="badge">✓ Live Demo</div>
+</div>
+
+<!-- ── Mobile scenario tabs ── -->
+<div class="scenario-tabs" id="mobileTabs">
+  <button class="tab-btn active" onclick="loadScenario('en')" id="tab-en">🇬🇧 English</button>
+  <button class="tab-btn" onclick="loadScenario('ar')" id="tab-ar">🇪🇬 Arabic</button>
+  <button class="tab-btn" onclick="loadScenario('franko')" id="tab-franko">🔤 Franko</button>
+  <button class="tab-btn" onclick="loadScenario('booking')" id="tab-booking">📅 Booking</button>
+  <button class="tab-btn" onclick="loadScenario('handover')" id="tab-handover">👤 Handover</button>
+</div>
+
+<div class="page-body">
+
+  <!-- ── Desktop sidebar ── -->
+  <div class="sidebar">
+    <div class="sidebar-label">Scenarios</div>
+
+    <button class="scenario-btn active" onclick="loadScenario('en')" id="btn-en">
+      <div class="sc-lang">🇬🇧 English</div>
+      <div class="sc-title">Workshop inquiry</div>
+      <div class="sc-desc">Price, dates, what's included</div>
+    </button>
+    <button class="scenario-btn" onclick="loadScenario('ar')" id="btn-ar">
+      <div class="sc-lang">🇪🇬 Arabic</div>
+      <div class="sc-title">استفسار عن الورشة</div>
+      <div class="sc-desc">ورشة الخاتم + الحجز</div>
+    </button>
+    <button class="scenario-btn" onclick="loadScenario('franko')" id="btn-franko">
+      <div class="sc-lang">🔤 Franko-Arabic</div>
+      <div class="sc-title">3arabi bi-english letters</div>
+      <div class="sc-desc">Mixed: ana 3ayza a3raf...</div>
+    </button>
+    <button class="scenario-btn" onclick="loadScenario('booking')" id="btn-booking">
+      <div class="sc-lang">📅 Booking flow</div>
+      <div class="sc-title">Complete a booking</div>
+      <div class="sc-desc">Pick workshop → confirm → pay</div>
+    </button>
+    <button class="scenario-btn" onclick="loadScenario('handover')" id="btn-handover">
+      <div class="sc-lang">👤 Human handover</div>
+      <div class="sc-title">Escalation to Rouby</div>
+      <div class="sc-desc">Bot detects → notifies Rouby</div>
+    </button>
+
+    <div class="sidebar-info">
+      <h3>Bot personality</h3>
+      <div class="info-row"><div class="dot"></div><span>Warm, friendly, on-brand</span></div>
+      <div class="info-row"><div class="dot"></div><span>Switches language automatically</span></div>
+      <div class="info-row"><div class="dot"></div><span>Never invents info — KB only</span></div>
+      <div class="info-row"><div class="dot"></div><span>Detects frustration → escalates</span></div>
+      <div class="info-row"><div class="dot"></div><span>Response time: &lt; 2 seconds</span></div>
+    </div>
+  </div>
+
+  <!-- ── Center ── -->
+  <div class="center-col">
+
+    <!-- Phone -->
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="wa-header">
+            <div class="wa-back">‹</div>
+            <div class="wa-avatar">💍</div>
+            <div class="wa-info">
+              <div class="wa-name">Beit Barsoum</div>
+              <div class="wa-status">Business account · typically replies instantly</div>
+            </div>
+            <div class="wa-icons">📞 ⋮</div>
+          </div>
+          <div class="wa-date-chip"><span>Today</span></div>
+          <div class="wa-messages" id="msgArea"></div>
+          <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+          <div class="wa-input">
+            <input type="text" placeholder="Type a message" readonly />
+            <button class="wa-send">➤</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Handover toast -->
+      <div class="handover-toast" id="handoverToast">
+        <div class="toast-top">
+          <div class="toast-icon">🔔</div>
+          <div class="toast-title">Human handover triggered</div>
+          <div class="toast-badge">ALERT</div>
+        </div>
+        <div class="toast-body">
+          Notification sent to Rouby in English:<br>
+          <strong>"Customer needs human help — custom corporate event for 25 people, bilingual (Arabic + English), branded jewelry theme."</strong><br><br>
+          Rouby can reply directly on WhatsApp. Bot pauses for 30 min.
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="demo-controls">
+        <button class="ctrl-btn primary" onclick="replayScenario()">▶ Replay</button>
+        <button class="ctrl-btn" onclick="skipToEnd()">⏭ Skip to end</button>
+        <button class="ctrl-btn" onclick="clearChat()">✕ Clear</button>
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="right-panel">
+
+      <!-- Architecture -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <h3>How it works</h3>
+          <p>Customer → WhatsApp → AI → instant reply</p>
+        </div>
+        <div class="panel-card-body">
+          <div class="arch-flow">
+            <div class="arch-node">
+              <div class="node-icon">📱</div>
+              <div class="node-label">Customer</div>
+              <div class="node-sub">WhatsApp</div>
+            </div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node highlight">
+              <div class="node-icon">⚡</div>
+              <div class="node-label">Meta API</div>
+              <div class="node-sub">Cloud</div>
+            </div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-col">
+              <div class="arch-node highlight">
+                <div class="node-icon">🖥️</div>
+                <div class="node-label">Bot Server</div>
+                <div class="node-sub">Express.js</div>
+              </div>
+              <div class="arch-sync-arrow">⇅</div>
+              <div class="arch-shopify">
+                <div class="node-icon">🛍️</div>
+                <div class="node-label">Shopify API</div>
+                <div class="node-sub">live data</div>
+              </div>
+            </div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node highlight">
+              <div class="node-icon">🤖</div>
+              <div class="node-label">Claude AI</div>
+              <div class="node-sub">trilingual</div>
+            </div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-node">
+              <div class="node-icon">💬</div>
+              <div class="node-label">Reply</div>
+              <div class="node-sub">&lt; 2 sec</div>
+            </div>
+          </div>
+          <div style="margin-top: 12px; font-size: 11px; color: #6b6a60; background: #faf9f5; border-radius: 8px; padding: 8px 12px; line-height: 1.6;">
+            Prices, dates &amp; availability pulled live from your Shopify store — always in sync, zero maintenance.<br>
+            Escalation: bot detects → direct WhatsApp message to Rouby's personal number (in English).
+          </div>
+        </div>
+      </div>
+
+      <!-- Workshops -->
+      <div class="panel-card">
+        <div class="panel-card-header" style="display:flex;align-items:center;gap:0;flex-wrap:wrap;">
+          <div style="flex:1;">
+            <h3>Workshop catalogue</h3>
+            <p>Pulled live from Shopify — prices &amp; availability always in sync</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;background:#eef4ff;border:1.5px solid #185fa5;border-radius:20px;padding:4px 10px;flex-shrink:0;">
+            <span style="display:inline-block;width:7px;height:7px;background:#185fa5;border-radius:50%;animation:livePulse 2s infinite;"></span>
+            <span style="font-size:10px;font-weight:700;color:#185fa5;">Shopify live</span>
+          </div>
+        </div>
+        <div class="panel-card-body" style="padding: 0;">
+          <table class="workshops-table">
+            <thead>
+              <tr>
+                <th>Workshop</th>
+                <th>Price</th>
+                <th>Next dates</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="wk-name">Intro to Jewelry Making</div><div style="font-size:11px;color:#93917f;">4 evenings, 6–9pm</div></td>
+                <td class="wk-price">LE 3,400</td>
+                <td class="wk-dates"><span class="avail">23 Aug–26 Aug</span></td>
+              </tr>
+              <tr>
+                <td><div class="wk-name">Make a Ring</div><div style="font-size:11px;color:#93917f;">4 evenings, 6–9pm</div></td>
+                <td class="wk-price">LE 3,400</td>
+                <td class="wk-dates"><span class="avail">28 Jun–1 Jul</span><br><span class="avail">2–5 Aug</span></td>
+              </tr>
+              <tr>
+                <td><div class="wk-name">One Day Ring</div><div style="font-size:11px;color:#93917f;">4 hours, Saturday</div></td>
+                <td class="wk-price">LE 900</td>
+                <td class="wk-dates"><span class="sold-out">20 Jun (sold out)</span><br><span class="avail">27 Jun (6 seats)</span></td>
+              </tr>
+              <tr>
+                <td><div class="wk-name">Design a Jewelry Set</div><div style="font-size:11px;color:#93917f;">6 days</div></td>
+                <td class="wk-price">LE 4,800</td>
+                <td class="wk-dates"><span style="color:#93917f;font-size:11px;">Sold out</span></td>
+              </tr>
+              <tr>
+                <td><div class="wk-name">Gouache Rendering</div><div style="font-size:11px;color:#93917f;">4 days</div></td>
+                <td class="wk-price">LE 3,900</td>
+                <td class="wk-dates"><span class="avail">19–22 Jul</span><br><span class="avail">16–19 Aug</span></td>
+              </tr>
+              <tr>
+                <td><div class="wk-name">Host Your Own Event</div><div style="font-size:11px;color:#93917f;">Private group</div></td>
+                <td class="wk-price">LE 9,500</td>
+                <td class="wk-dates" style="color:#6b6a60;">On request</td>
+              </tr>
+              <tr>
+                <td><div class="wk-name">Earrings Workshop</div></td>
+                <td class="wk-price" style="color:#93917f;">TBC</td>
+                <td class="wk-dates"><span class="escalate-tag">→ Human</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="padding:9px 14px;border-top:1px solid #f0ede4;display:flex;align-items:center;gap:6px;">
+            <span style="display:inline-block;width:6px;height:6px;background:#185fa5;border-radius:50%;animation:livePulse 2s infinite;flex-shrink:0;"></span>
+            <span style="font-size:10px;color:#6b6a60;">Data fetched from <strong style="color:#185fa5;">beitbarsoum.com Shopify store</strong> on every customer message — prices and dates update automatically when Rouby edits his store.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Languages -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <h3>Trilingual by default</h3>
+          <p>Auto-detects language, replies in kind</p>
+        </div>
+        <div class="panel-card-body">
+          <div class="lang-pills">
+            <div>
+              <div class="lang-pill"><span>🇬🇧</span> English</div>
+              <div style="font-size:11px;color:#93917f;margin-top:4px;font-style:italic;">"What's included in the price?"</div>
+            </div>
+            <div>
+              <div class="lang-pill"><span>🇪🇬</span> Arabic</div>
+              <div style="font-size:11px;color:#93917f;margin-top:4px;font-style:italic;">"إيه اللي بيتضمنه سعر الورشة؟"</div>
+            </div>
+            <div>
+              <div class="lang-pill"><span>🔤</span> Franko</div>
+              <div style="font-size:11px;color:#93917f;margin-top:4px;font-style:italic;">"ana 3ayza a3raf el sa3r w el maw3ed"</div>
+            </div>
+          </div>
+          <div style="margin-top: 12px; background: #faf9f5; border-radius: 8px; padding: 10px 12px; font-size: 11px; color: #6b6a60;">
+            Mixed messages like <em>"3ayza I join the next workshop, emta?"</em> handled naturally — no setup required.
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <h3>Cost to Rouby</h3>
+          <p>One-time setup + monthly running</p>
+        </div>
+        <div class="panel-card-body">
+          <div class="pricing-section">
+            <div class="pricing-block">
+              <h4>One-time setup</h4>
+              <div class="price-row"><span class="label">Bot build + setup</span><span class="value accent">7,000 EGP</span></div>
+              <div class="price-row"><span class="label">WhatsApp API</span><span class="value free">Free</span></div>
+              <div class="price-row"><span class="label">Knowledge base</span><span class="value">Included</span></div>
+              <div class="price-row"><span class="label">1 month support</span><span class="value">Included</span></div>
+              <div class="price-total"><span class="label">Total</span><span class="value">7,000 EGP</span></div>
+            </div>
+            <div class="pricing-block">
+              <h4>Monthly running</h4>
+              <div class="price-row"><span class="label">VPS (server)</span><span class="value">~250 EGP</span></div>
+              <div class="price-row"><span class="label">Claude AI</span><span class="value">~100–300 EGP</span></div>
+              <div class="price-row"><span class="label">WhatsApp API</span><span class="value free">Free*</span></div>
+              <div class="price-row"><span class="label" style="font-size:10px;color:#93917f;">*up to 1,000 convos/mo</span><span></span></div>
+              <div class="price-total"><span class="label">Per month</span><span class="value">350–550 EGP</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features -->
+      <div class="panel-card">
+        <div class="panel-card-header"><h3>What the bot does</h3></div>
+        <div class="panel-card-body">
+          <div class="feature-grid">
+            <div class="feature-item">
+              <div class="feature-icon">🗓️</div>
+              <div class="feature-text"><div class="ft">Dates & availability</div><div class="fs">Next sessions, sold-out warnings</div></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">💰</div>
+              <div class="feature-text"><div class="ft">Pricing & inclusions</div><div class="fs">Explains what each price covers</div></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">📦</div>
+              <div class="feature-text"><div class="ft">Workshop comparisons</div><div class="fs">Helps customer pick the right one</div></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">📋</div>
+              <div class="feature-text"><div class="ft">Booking guidance</div><div class="fs">Sends link, confirms next step</div></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">🎉</div>
+              <div class="feature-text"><div class="ft">Private events</div><div class="fs">Bridal / group / corporate enquiries</div></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">🔔</div>
+              <div class="feature-text"><div class="ft">Human handover</div><div class="fs">Pings Rouby when human touch needed</div></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">🌐</div>
+              <div class="feature-text"><div class="ft">EN / AR / Franko-AR</div><div class="fs">Auto-detects, replies in same language</div></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">⏰</div>
+              <div class="feature-text"><div class="ft">24 / 7 availability</div><div class="fs">Replies while Rouby sleeps</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- What we still need -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <h3>What we still need from you</h3>
+          <p>A few things before we can go live</p>
+        </div>
+        <div class="panel-card-body">
+          <div class="need-list">
+            <div class="need-item">
+              <div class="need-icon">🔴</div>
+              <div class="need-content">
+                <div class="need-title">WhatsApp Business number</div>
+                <div class="need-desc">The number you want the bot to answer on — required to connect to Meta API</div>
+              </div>
+            </div>
+            <div class="need-item">
+              <div class="need-icon">🔴</div>
+              <div class="need-content">
+                <div class="need-title">Facebook Business Manager account</div>
+                <div class="need-desc">Required by Meta to activate the WhatsApp Cloud API — takes ~10 min to set up if you don't have one</div>
+              </div>
+            </div>
+            <div class="need-item">
+              <div class="need-icon">🟡</div>
+              <div class="need-content">
+                <div class="need-title">Cancellation &amp; refund policy</div>
+                <div class="need-desc">Customers ask this often — bot needs the exact policy text to answer correctly</div>
+              </div>
+            </div>
+            <div class="need-item">
+              <div class="need-icon">🟡</div>
+              <div class="need-content">
+                <div class="need-title">Earrings Workshop details</div>
+                <div class="need-desc">Price, duration, upcoming dates — currently the bot escalates all earrings questions to you</div>
+              </div>
+            </div>
+            <div class="need-item">
+              <div class="need-icon">🟢</div>
+              <div class="need-content">
+                <div class="need-title">Active promotions or discount codes</div>
+                <div class="need-desc">Any live deals the bot should mention</div>
+              </div>
+            </div>
+            <div class="need-item">
+              <div class="need-icon">🟢</div>
+              <div class="need-content">
+                <div class="need-title">WhatsApp chat exports (10–20 chats)</div>
+                <div class="need-desc">Pick typical customer conversations → Chat → ⋮ → More → Export Chat (no media needed) — helps the bot match your tone and the way Beit Barsoum talks to customers</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px;background:#faf9f5;border-radius:8px;padding:9px 12px;font-size:11px;color:#6b6a60;">
+            🔴 Required to launch &nbsp;·&nbsp; 🟡 Required for full coverage &nbsp;·&nbsp; 🟢 Nice to have
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+const scenarios = {
+
+  en: {
+    label: '🇬🇧 English — Workshop inquiry',
+    messages: [
+      { role: 'bot', text: 'Hi! 👋 Welcome to Beit Barsoum 💍\nI\'m here to help with workshops, pricing, and bookings.\nWhat can I help you with today?', delay: 0 },
+      { role: 'user', text: 'Hi! I want to know more about your workshops', delay: 1200 },
+      { role: 'bot', text: 'Great! 🎨 We have several workshops — here\'s a quick overview:\n\n💍 *Make a Ring* — LE 3,400 · 4 evenings\n💍 *Intro to Jewelry Making* — LE 3,400 · 4 evenings\n🎨 *Gouache Rendering* — LE 3,900 · 4 days\n📐 *Design a Jewelry Set* — LE 4,800 · 6 days\n⭐ *One Day Ring* — LE 900 · just 4 hours!\n🎉 *Host Your Own Event* — LE 9,500 (private group)\n\nAny of these catch your eye?', delay: 2000 },
+      { role: 'user', text: 'The One Day Ring sounds interesting — only LE 900?', delay: 1500 },
+      { role: 'bot', text: 'Yes! 🌟 It\'s our most accessible workshop:\n\n*One Day Ring* — LE 900\n⏱️ 4 hours, one Saturday session\n📍 Beit Barsoum, Fustat, Cairo\n👥 Max 8 students per session\n\n*What\'s included:*\n✅ All tools and materials\n✅ Brass or copper — your choice\n✅ Expert guidance throughout\n✅ Your finished ring to take home\n\nNo experience needed — just curiosity and willingness to get your hands dirty!', delay: 2400 },
+      { role: 'user', text: 'When is the next available date?', delay: 1200 },
+      { role: 'bot', text: 'Next available date for One Day Ring:\n\n📅 *Saturday, 27 June 2026*\n• 11am – 3pm (6 seats remaining)\n• 4pm – 7pm (6 seats remaining)\n\n(The 20 June sessions are sold out)\n\nWant me to send you the booking link? 😊', delay: 1800 },
+    ]
+  },
+
+  ar: {
+    label: '🇪🇬 Arabic — ورشة + الحجز',
+    messages: [
+      { role: 'bot', text: 'أهلاً وسهلاً! 👋 مرحبتين في بيت برسوم 💍\nأنا هنا أساعدك في أي استفسار عن الورش أو المجوهرات.\nبتقدري أساعدك بإيه النهارده؟', delay: 0 },
+      { role: 'user', text: 'أنا عايزة أعرف إيه ورشة صنع الخاتم في يوم واحد؟', delay: 1200 },
+      { role: 'bot', text: 'تمام جداً! 💍 ورشة "الخاتم في يوم واحد" دي تجربة رائعة ومش محتاجة أي خبرة!\n\n*السعر:* LE 900 بس\n*المدة:* ٤ ساعات — جلسة واحدة يوم السبت\n*أقصى عدد:* ٨ طلاب في الفصل\n📍 بيت برسوم، الفسطاط، القاهرة\n\n*إيه اللي بيتضمنه السعر:*\n✅ كل الأدوات والمواد\n✅ معدن النحاس أو البراص — انتي تختاري\n✅ إشراف متخصص طول الوقت\n✅ الخاتم اللي هتعمليه بإيدك ترجعي بيه البيت\n\nتحبي تعرفي المواعيد القادمة؟', delay: 2400 },
+      { role: 'user', text: 'أيوه! امتى المواعيد الجاية؟', delay: 1000 },
+      { role: 'bot', text: 'المواعيد القادمة لورشة الخاتم في يوم واحد:\n\n📅 *السبت ٢٧ يونيو ٢٠٢٦*\n• من ١١ الصبح لـ ٣ العصر (٦ أماكن متاحة)\n• من ٤ العصر لـ ٧ بالليل (٦ أماكن متاحة)\n\n⚠️ موعد ٢٠ يونيو اتملى خالص\n\nعايزة آخدلك مكان دلوقتي؟ 🎉', delay: 2000 },
+      { role: 'user', text: 'أيوه عايزة أحجز!', delay: 1000 },
+      { role: 'bot', text: 'تمام يا فندم! 🎉 اتفضلي رابط الحجز:\n👉 beitbarsoum.com\n\nاختاري الورشة والموعد اللي يناسبك وكملي الدفع على الموقع.\nهيوصلك تأكيد على الإيميل فوراً ✅\n\nلو محتاجة أي مساعدة في الخطوات، قوليلي! 💍', delay: 1800 },
+    ]
+  },
+
+  franko: {
+    label: '🔤 Franko-Arabic — Mixed language',
+    messages: [
+      { role: 'bot', text: 'Hi! 👋 Welcome to Beit Barsoum 💍\nFeel free to write in any language!', delay: 0 },
+      { role: 'user', text: 'ana 3ayza a3raf 3an el workshops 3andoko', delay: 1200 },
+      { role: 'bot', text: 'Ahlan! 😊 3andena kaza workshop:\n\n⭐ *One Day Ring* — LE 900 (4 sa3at bas!)\n💍 *Make a Ring* — LE 3,400 (4 leiali)\n💍 *Intro to Jewelry Making* — LE 3,400 (4 leiali)\n🎨 *Gouache Rendering* — LE 3,900 (4 ayam)\n📐 *Design a Jewelry Set* — LE 4,800 (6 ayam)\n🎉 *Private Event* — LE 9,500 le group\n\nAy 7aga 3agebalek?', delay: 2200 },
+      { role: 'user', text: 'el one day ring sounds tempting, bs ana 3omri ma 3amalt 7aga men da', delay: 1400 },
+      { role: 'bot', text: 'Msh moshkela khales! 🙌 El workshop dah designed lel mubtadi2in — msh lazim 3andek ay khibra.\n\nEl sa3r LE 900 biyeshmal:\n✅ Kol el tools wel materials\n✅ Na7as aw bras — enty tekhتaри\n✅ Expert ma3aki tol el 4 sa3at\n✅ El khātem elly hati3melieh hayeb2a bita3ek terga3i bih el beit\n\nWe el class max 8 students — so personal gedan 😊\n\nEmta tigi?', delay: 2400 },
+      { role: 'user', text: 'aiwa 3ayza agi 27 june, fi maweid sabahan?', delay: 1200 },
+      { role: 'bot', text: 'Tamam! 📅 *27 June 2026:*\n• 11am – 3pm ✅ (6 seats left)\n• 4pm – 7pm ✅ (6 seats left)\n\nKelahom mawgudeen! Le te7gezi:\n👉 beitbarsoum.com\n\n3ayza ay tafaseel tanya? 💍', delay: 1800 },
+    ]
+  },
+
+  booking: {
+    label: '📅 Booking flow — End-to-end',
+    messages: [
+      { role: 'bot', text: 'Hi! 👋 Welcome to Beit Barsoum 💍\nWhat can I help you with today?', delay: 0 },
+      { role: 'user', text: 'I want to book a workshop this month — what do you have available?', delay: 1200 },
+      { role: 'bot', text: 'Great timing! Here\'s what\'s available soon:\n\n📅 *27 Jun 2026 (Saturday)*\n⭐ One Day Ring — LE 900\n  • 11am–3pm · 6 seats\n  • 4pm–7pm · 6 seats\n\n📅 *28 Jun – 1 Jul 2026*\n💍 Make a Ring — LE 3,400\n  • 4 evenings, 6–9pm · 1 seat remaining!\n\nWhich one interests you?', delay: 2200 },
+      { role: 'user', text: 'The Make a Ring sounds perfect. Is 1 seat really the last one?', delay: 1400 },
+      { role: 'bot', text: 'Yes — only *1 seat remaining* for 28 Jun–1 Jul 🔥\n\nMake a Ring — LE 3,400:\n✅ 4 evenings (28 Jun, 29 Jun, 30 Jun, 1 Jul)\n✅ 6:00–9:00 PM each evening\n✅ All tools, materials, and guidance included\n✅ You take home a finished ring in brass, copper, or silver\n📍 Beit Barsoum, Fustat, Cairo\n\nNext batch (2–5 Aug) has more availability if this one sells out. Want to grab the last spot now?', delay: 2400 },
+      { role: 'user', text: 'Yes! How do I book?', delay: 1000 },
+      { role: 'bot', text: 'Here\'s how to secure your spot:\n\n1️⃣ Go to: *beitbarsoum.com*\n2️⃣ Find *Make a Ring Workshop*\n3️⃣ Select *28 Jun – 1 Jul 2026*\n4️⃣ Complete checkout — LE 3,400\n\nYou\'ll get a confirmation email immediately ✅\n\nAny questions before you book? 😊', delay: 2000 },
+      { role: 'user', text: 'Can I bring a friend? They might want to join too', delay: 1200 },
+      { role: 'bot', text: 'Of course! 🥰 Each person books their own spot on the website.\n\nNote: there\'s only *1 seat left* in the 28 Jun batch, so your friend might need to join the *2–5 Aug* batch instead — still the same experience!\n\nFor groups of 5+, we also have *Host Your Own Event* (LE 9,500) — a private session just for your group. Great value if you\'re coming together!\n\nAnything else I can help with?', delay: 2400 },
+    ]
+  },
+
+  handover: {
+    label: '👤 Human handover — Escalation to Rouby',
+    showToast: true,
+    messages: [
+      { role: 'bot', text: 'Hi! 👋 Welcome to Beit Barsoum 💍\nWhat can I help you with today?', delay: 0 },
+      { role: 'user', text: 'Hi, I need to organise a very specific custom event for my company', delay: 1200 },
+      { role: 'bot', text: 'Of course! 😊 We do offer *Host Your Own Event* for private groups — great for corporate teams, bridal parties, and friend groups.\n\nCould you tell me a bit more?\n• How many people in your group?\n• Any date in mind?\n• Anything specific you\'re envisioning?', delay: 2000 },
+      { role: 'user', text: 'We\'re a team of 25 and we want a fully customised half-day experience with a specific jewelry theme tied to our brand identity. Very specific requirements.', delay: 1500 },
+      { role: 'bot', text: 'That sounds like a fantastic corporate experience! 🎉\n\nFor a group of 25 with custom branding and a bespoke jewelry theme, this goes beyond what I can confirm directly — I want to make sure you get exactly the right package.\n\nI\'m connecting you with Rouby, our team lead, who can design this from scratch for you.\n\n⏳ You\'ll hear back within a few hours. Is there anything else I should note for him?', delay: 2600 },
+      { role: 'user', text: 'Yes please — our team is mixed so the session needs to be bilingual, Arabic and English', delay: 1200 },
+      { role: 'system', text: '🔔 Notification sent to Rouby' },
+      { role: 'bot', text: 'Perfect, all noted! I\'ve passed everything to Rouby:\n\n📋 *Summary:*\n• 25-person corporate group\n• Custom jewelry theme (brand-related)\n• Half-day experience\n• Bilingual: Arabic + English\n\nHe\'ll be in touch shortly 💍\nThank you for reaching out to Beit Barsoum!', delay: 2000 },
+    ]
+  }
+};
+
+// ── State ──────────────────────────────────────────────────────
+let currentScenario = 'en';
+let playQueue = [];
+let playing = false;
+
+// ── Chat ───────────────────────────────────────────────────────
+function clearChat() {
+  document.getElementById('msgArea').innerHTML = '';
+  document.getElementById('typingIndicator').classList.remove('show');
+  document.getElementById('handoverToast').classList.remove('show');
+  playQueue = [];
+  playing = false;
+}
+
+function addMessage(role, text) {
+  const area = document.getElementById('msgArea');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if (role === 'system') {
+    div.textContent = text;
+  } else {
+    const now = new Date();
+    const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+    div.innerHTML = formatText(text) + '<span class="msg-time">' + time + (role === 'user' ? ' <span class="msg-check">✓✓</span>' : '') + '</span>';
+  }
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function formatText(t) {
+  return t.replace(/\*([^*]+)\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+}
+
+function showTyping() {
+  const t = document.getElementById('typingIndicator');
+  t.classList.add('show');
+  document.getElementById('msgArea').scrollTop = document.getElementById('msgArea').scrollHeight;
+}
+
+function hideTyping() {
+  document.getElementById('typingIndicator').classList.remove('show');
+}
+
+// ── Playback ───────────────────────────────────────────────────
+function playNext() {
+  if (!playQueue.length) { playing = false; return; }
+  playing = true;
+  const item = playQueue.shift();
+
+  if (item.role === 'bot') {
+    showTyping();
+    setTimeout(() => {
+      hideTyping();
+      addMessage('bot', item.text);
+      setTimeout(playNext, 400);
+    }, Math.min(item.text.length * 18, 1800));
+  } else if (item.role === 'user') {
+    addMessage('user', item.text);
+    setTimeout(playNext, 600);
+  } else if (item.role === 'system') {
+    addMessage('system', item.text);
+    if (item.showToast) document.getElementById('handoverToast').classList.add('show');
+    setTimeout(playNext, 800);
+  }
+}
+
+function enqueueScenario(key) {
+  const s = scenarios[key];
+  s.messages.forEach(m => {
+    playQueue.push({ role: m.role, text: m.text, showToast: m.role === 'system' && !!s.showToast });
+  });
+}
+
+// ── Scenario loading ───────────────────────────────────────────
+function loadScenario(key) {
+  currentScenario = key;
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const desktopBtn = document.getElementById('btn-' + key);
+  const mobileTab = document.getElementById('tab-' + key);
+  if (desktopBtn) desktopBtn.classList.add('active');
+  if (mobileTab) mobileTab.classList.add('active');
+  clearChat();
+  enqueueScenario(key);
+  setTimeout(() => { if (!playing) playNext(); }, 300);
+}
+
+function replayScenario() { loadScenario(currentScenario); }
+
+function skipToEnd() {
+  const s = scenarios[currentScenario];
+  clearChat(); hideTyping();
+  s.messages.forEach(m => {
+    if (m.role === 'system') {
+      addMessage('system', m.text);
+      if (s.showToast) document.getElementById('handoverToast').classList.add('show');
+    } else {
+      addMessage(m.role, m.text);
+    }
+  });
+}
+
+loadScenario('en');
+</script>
+</body>
+</html>
