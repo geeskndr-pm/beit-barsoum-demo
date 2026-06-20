@@ -439,6 +439,44 @@
     .phone-notch { width: 80px; }
   }
 
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ── Shopify arch node ── */
+  .arch-col { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .arch-shopify {
+    background: #eef4ff; border: 1.5px solid #185fa5;
+    border-radius: 10px; padding: 7px 10px; text-align: center; min-width: 80px;
+  }
+  .arch-shopify .node-icon { font-size: 16px; margin-bottom: 2px; }
+  .arch-shopify .node-label { font-size: 10px; font-weight: 700; color: #185fa5; }
+  .arch-shopify .node-sub { font-size: 9px; color: #185fa5; opacity: 0.7; margin-top: 1px; }
+  .arch-sync-arrow { font-size: 11px; color: #185fa5; line-height: 1; }
+
+  /* ── Needs checklist ── */
+  .need-list { display: flex; flex-direction: column; gap: 10px; }
+  .need-item { display: flex; gap: 10px; align-items: flex-start; }
+  .need-icon { font-size: 12px; flex-shrink: 0; margin-top: 2px; }
+  .need-content {}
+  .need-title { font-size: 12px; font-weight: 600; color: #28261b; }
+  .need-desc { font-size: 11px; color: #6b6a60; margin-top: 2px; line-height: 1.4; }
+
+  /* ── Voice training steps ── */
+  .voice-steps { display: flex; flex-direction: column; gap: 10px; }
+  .voice-step { display: flex; gap: 10px; align-items: flex-start; }
+  .vs-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #d97757; color: #fff;
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .vs-content {}
+  .vs-title { font-size: 12px; font-weight: 600; color: #28261b; }
+  .vs-desc { font-size: 11px; color: #6b6a60; margin-top: 2px; }
+
   /* ── Workshops table ── */
   .workshops-table {
     width: 100%; border-collapse: collapse; font-size: 12px;
@@ -516,8 +554,8 @@
     </button>
     <button class="scenario-btn" onclick="loadScenario('handover')" id="btn-handover">
       <div class="sc-lang">👤 Human handover</div>
-      <div class="sc-title">Escalation to Robeir</div>
-      <div class="sc-desc">Bot detects → notifies Robeir</div>
+      <div class="sc-title">Escalation to Rouby</div>
+      <div class="sc-desc">Bot detects → notifies Rouby</div>
     </button>
 
     <div class="sidebar-info">
@@ -569,9 +607,9 @@
           <div class="toast-badge">ALERT</div>
         </div>
         <div class="toast-body">
-          Notification sent to Robeir in English:<br>
+          Notification sent to Rouby in English:<br>
           <strong>"Customer needs human help — custom corporate event for 25 people, bilingual (Arabic + English), branded jewelry theme."</strong><br><br>
-          Robeir can reply directly on WhatsApp. Bot pauses for 30 min.
+          Rouby can reply directly on WhatsApp. Bot pauses for 30 min.
         </div>
       </div>
 
@@ -606,16 +644,24 @@
               <div class="node-sub">Cloud</div>
             </div>
             <div class="arch-arrow">→</div>
-            <div class="arch-node highlight">
-              <div class="node-icon">🔄</div>
-              <div class="node-label">n8n</div>
-              <div class="node-sub">Automation</div>
+            <div class="arch-col">
+              <div class="arch-node highlight">
+                <div class="node-icon">🖥️</div>
+                <div class="node-label">Bot Server</div>
+                <div class="node-sub">Express.js</div>
+              </div>
+              <div class="arch-sync-arrow">⇅</div>
+              <div class="arch-shopify">
+                <div class="node-icon">🛍️</div>
+                <div class="node-label">Shopify API</div>
+                <div class="node-sub">live data</div>
+              </div>
             </div>
             <div class="arch-arrow">→</div>
             <div class="arch-node highlight">
               <div class="node-icon">🤖</div>
               <div class="node-label">Claude AI</div>
-              <div class="node-sub">+ Knowledge Base</div>
+              <div class="node-sub">trilingual</div>
             </div>
             <div class="arch-arrow">→</div>
             <div class="arch-node">
@@ -624,17 +670,24 @@
               <div class="node-sub">&lt; 2 sec</div>
             </div>
           </div>
-          <div style="margin-top: 12px; font-size: 11px; color: #6b6a60; background: #faf9f5; border-radius: 8px; padding: 8px 12px;">
-            Escalation path: bot detects → n8n → WhatsApp message to Robeir's number (in English)
+          <div style="margin-top: 12px; font-size: 11px; color: #6b6a60; background: #faf9f5; border-radius: 8px; padding: 8px 12px; line-height: 1.6;">
+            Prices, dates &amp; availability pulled live from your Shopify store — always in sync, zero maintenance.<br>
+            Escalation: bot detects → direct WhatsApp message to Rouby's personal number (in English).
           </div>
         </div>
       </div>
 
       <!-- Workshops -->
       <div class="panel-card">
-        <div class="panel-card-header">
-          <h3>Workshop catalogue</h3>
-          <p>Live pricing + upcoming availability</p>
+        <div class="panel-card-header" style="display:flex;align-items:center;gap:0;flex-wrap:wrap;">
+          <div style="flex:1;">
+            <h3>Workshop catalogue</h3>
+            <p>Pulled live from Shopify — prices &amp; availability always in sync</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;background:#eef4ff;border:1.5px solid #185fa5;border-radius:20px;padding:4px 10px;flex-shrink:0;">
+            <span style="display:inline-block;width:7px;height:7px;background:#185fa5;border-radius:50%;animation:livePulse 2s infinite;"></span>
+            <span style="font-size:10px;font-weight:700;color:#185fa5;">Shopify live</span>
+          </div>
         </div>
         <div class="panel-card-body" style="padding: 0;">
           <table class="workshops-table">
@@ -683,6 +736,10 @@
               </tr>
             </tbody>
           </table>
+          <div style="padding:9px 14px;border-top:1px solid #f0ede4;display:flex;align-items:center;gap:6px;">
+            <span style="display:inline-block;width:6px;height:6px;background:#185fa5;border-radius:50%;animation:livePulse 2s infinite;flex-shrink:0;"></span>
+            <span style="font-size:10px;color:#6b6a60;">Data fetched from <strong style="color:#185fa5;">beitbarsoum.com Shopify store</strong> on every customer message — prices and dates update automatically when Rouby edits his store.</span>
+          </div>
         </div>
       </div>
 
@@ -716,7 +773,7 @@
       <!-- Pricing -->
       <div class="panel-card">
         <div class="panel-card-header">
-          <h3>Cost to Robeir</h3>
+          <h3>Cost to Rouby</h3>
           <p>One-time setup + monthly running</p>
         </div>
         <div class="panel-card-body">
@@ -731,7 +788,7 @@
             </div>
             <div class="pricing-block">
               <h4>Monthly running</h4>
-              <div class="price-row"><span class="label">VPS (n8n host)</span><span class="value">~250 EGP</span></div>
+              <div class="price-row"><span class="label">VPS (server)</span><span class="value">~250 EGP</span></div>
               <div class="price-row"><span class="label">Claude AI</span><span class="value">~100–300 EGP</span></div>
               <div class="price-row"><span class="label">WhatsApp API</span><span class="value free">Free*</span></div>
               <div class="price-row"><span class="label" style="font-size:10px;color:#93917f;">*up to 1,000 convos/mo</span><span></span></div>
@@ -768,7 +825,7 @@
             </div>
             <div class="feature-item">
               <div class="feature-icon">🔔</div>
-              <div class="feature-text"><div class="ft">Human handover</div><div class="fs">Pings Robeir when human touch needed</div></div>
+              <div class="feature-text"><div class="ft">Human handover</div><div class="fs">Pings Rouby when human touch needed</div></div>
             </div>
             <div class="feature-item">
               <div class="feature-icon">🌐</div>
@@ -776,8 +833,104 @@
             </div>
             <div class="feature-item">
               <div class="feature-icon">⏰</div>
-              <div class="feature-text"><div class="ft">24 / 7 availability</div><div class="fs">Replies while Robeir sleeps</div></div>
+              <div class="feature-text"><div class="ft">24 / 7 availability</div><div class="fs">Replies while Rouby sleeps</div></div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- What we still need -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <h3>What we still need from you</h3>
+          <p>A few things before we can go live</p>
+        </div>
+        <div class="panel-card-body">
+          <div class="need-list">
+            <div class="need-item">
+              <div class="need-icon">🔴</div>
+              <div class="need-content">
+                <div class="need-title">WhatsApp Business number</div>
+                <div class="need-desc">The number you want the bot to answer on — required to connect to Meta API</div>
+              </div>
+            </div>
+            <div class="need-item">
+              <div class="need-icon">🔴</div>
+              <div class="need-content">
+                <div class="need-title">Facebook Business Manager account</div>
+                <div class="need-desc">Required by Meta to activate the WhatsApp Cloud API — takes ~10 min to set up if you don't have one</div>
+              </div>
+            </div>
+            <div class="need-item">
+              <div class="need-icon">🟡</div>
+              <div class="need-content">
+                <div class="need-title">Cancellation &amp; refund policy</div>
+                <div class="need-desc">Customers ask this often — bot needs the exact policy text to answer correctly</div>
+              </div>
+            </div>
+            <div class="need-item">
+              <div class="need-icon">🟡</div>
+              <div class="need-content">
+                <div class="need-title">Earrings Workshop details</div>
+                <div class="need-desc">Price, duration, upcoming dates — currently the bot escalates all earrings questions to you</div>
+              </div>
+            </div>
+            <div class="need-item">
+              <div class="need-icon">🟢</div>
+              <div class="need-content">
+                <div class="need-title">Active promotions or discount codes</div>
+                <div class="need-desc">Any live deals the bot should mention</div>
+              </div>
+            </div>
+            <div class="need-item">
+              <div class="need-icon">🟢</div>
+              <div class="need-content">
+                <div class="need-title">Google Maps link for your location</div>
+                <div class="need-desc">We have Fustat, Cairo — a direct maps link helps customers navigate</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px;background:#faf9f5;border-radius:8px;padding:9px 12px;font-size:11px;color:#6b6a60;">
+            🔴 Required to launch &nbsp;·&nbsp; 🟡 Required for full coverage &nbsp;·&nbsp; 🟢 Nice to have
+          </div>
+        </div>
+      </div>
+
+      <!-- Voice training -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <h3>Help us train your bot's voice</h3>
+          <p>Share real chats — the bot learns to sound like you</p>
+        </div>
+        <div class="panel-card-body">
+          <div style="font-size:12px;color:#28261b;margin-bottom:12px;line-height:1.6;">
+            The more real conversations we have from your current WhatsApp, the better the bot matches your tone and the way Beit Barsoum talks to customers.
+          </div>
+          <div class="voice-steps">
+            <div class="voice-step">
+              <div class="vs-num">1</div>
+              <div class="vs-content">
+                <div class="vs-title">Open WhatsApp → pick 10–20 typical customer chats</div>
+                <div class="vs-desc">Workshop questions, booking conversations, anything you reply to most often</div>
+              </div>
+            </div>
+            <div class="voice-step">
+              <div class="vs-num">2</div>
+              <div class="vs-content">
+                <div class="vs-title">Export or screenshot them</div>
+                <div class="vs-desc">Chat → ⋮ → More → Export Chat (no media needed) — or just screenshots work fine</div>
+              </div>
+            </div>
+            <div class="voice-step">
+              <div class="vs-num">3</div>
+              <div class="vs-content">
+                <div class="vs-title">Send them to George</div>
+                <div class="vs-desc">.txt export, screenshots, or forwarded threads — any format works</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px;background:#faf9f5;border-radius:8px;padding:9px 12px;font-size:11px;color:#6b6a60;line-height:1.5;">
+            <strong style="color:#28261b;">What we're looking for:</strong> How you greet customers · how you describe workshops · how you handle "is it for beginners?" · how you close a booking. Real examples = bot that sounds exactly like Beit Barsoum.
           </div>
         </div>
       </div>
@@ -845,17 +998,17 @@ const scenarios = {
   },
 
   handover: {
-    label: '👤 Human handover — Escalation to Robeir',
+    label: '👤 Human handover — Escalation to Rouby',
     showToast: true,
     messages: [
       { role: 'bot', text: 'Hi! 👋 Welcome to Beit Barsoum 💍\nWhat can I help you with today?', delay: 0 },
       { role: 'user', text: 'Hi, I need to organise a very specific custom event for my company', delay: 1200 },
       { role: 'bot', text: 'Of course! 😊 We do offer *Host Your Own Event* for private groups — great for corporate teams, bridal parties, and friend groups.\n\nCould you tell me a bit more?\n• How many people in your group?\n• Any date in mind?\n• Anything specific you\'re envisioning?', delay: 2000 },
       { role: 'user', text: 'We\'re a team of 25 and we want a fully customised half-day experience with a specific jewelry theme tied to our brand identity. Very specific requirements.', delay: 1500 },
-      { role: 'bot', text: 'That sounds like a fantastic corporate experience! 🎉\n\nFor a group of 25 with custom branding and a bespoke jewelry theme, this goes beyond what I can confirm directly — I want to make sure you get exactly the right package.\n\nI\'m connecting you with Robeir, our team lead, who can design this from scratch for you.\n\n⏳ You\'ll hear back within a few hours. Is there anything else I should note for him?', delay: 2600 },
+      { role: 'bot', text: 'That sounds like a fantastic corporate experience! 🎉\n\nFor a group of 25 with custom branding and a bespoke jewelry theme, this goes beyond what I can confirm directly — I want to make sure you get exactly the right package.\n\nI\'m connecting you with Rouby, our team lead, who can design this from scratch for you.\n\n⏳ You\'ll hear back within a few hours. Is there anything else I should note for him?', delay: 2600 },
       { role: 'user', text: 'Yes please — our team is mixed so the session needs to be bilingual, Arabic and English', delay: 1200 },
-      { role: 'system', text: '🔔 Notification sent to Robeir' },
-      { role: 'bot', text: 'Perfect, all noted! I\'ve passed everything to Robeir:\n\n📋 *Summary:*\n• 25-person corporate group\n• Custom jewelry theme (brand-related)\n• Half-day experience\n• Bilingual: Arabic + English\n\nHe\'ll be in touch shortly 💍\nThank you for reaching out to Beit Barsoum!', delay: 2000 },
+      { role: 'system', text: '🔔 Notification sent to Rouby' },
+      { role: 'bot', text: 'Perfect, all noted! I\'ve passed everything to Rouby:\n\n📋 *Summary:*\n• 25-person corporate group\n• Custom jewelry theme (brand-related)\n• Half-day experience\n• Bilingual: Arabic + English\n\nHe\'ll be in touch shortly 💍\nThank you for reaching out to Beit Barsoum!', delay: 2000 },
     ]
   }
 };
