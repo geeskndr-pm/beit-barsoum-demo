@@ -673,6 +673,7 @@ function addMsg(text, role) {
 
   if (role === 'system') {
     div.className = 'msg-system';
+    div.textContent = text;
   } else if (role === 'logged') {
     div.className = 'msg-logged';
     div.textContent = '✓ Feedback logged to Google Sheets';
