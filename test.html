@@ -361,6 +361,51 @@ textarea::placeholder { color: var(--text-3); }
   text-decoration: underline;
 }
 
+/* ── State panel ─────────────────────────────────────────── */
+.state-panel {
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.state-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+.state-panel-header:hover { background: var(--bg); }
+.state-panel-title {
+  font-size: 11px; font-weight: 700; color: var(--text-3);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.state-toggle { font-size: 10px; color: var(--text-3); transition: transform 0.2s; }
+.state-toggle.collapsed { transform: rotate(180deg); }
+.state-panel-body { padding: 0 12px 10px; }
+.state-date {
+  font-size: 11px; color: var(--text-2);
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 9px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 5px;
+}
+.state-row {
+  display: flex; align-items: flex-start; gap: 7px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+.state-row:last-child { border-bottom: none; }
+.state-badge {
+  font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0; margin-top: 1px;
+}
+.sb-ok    { background: var(--green-bg); color: var(--green); }
+.sb-limit { background: var(--amber-bg); color: var(--amber); }
+.sb-full  { background: #fde8de; color: #c0392b; }
+.sb-off   { background: #f5e6e6; color: #a32d2d; }
+.sb-unk   { background: var(--border); color: var(--text-3); }
+.state-wname { font-weight: 600; color: var(--text); line-height: 1.3; }
+.state-detail { font-size: 10px; color: var(--text-3); margin-top: 1px; line-height: 1.3; }
+
 /* ── Mobile ──────────────────────────────────────────── */
 @media (max-width: 680px) {
   .sidebar { display: none; }
@@ -434,6 +479,46 @@ textarea::placeholder { color: var(--text-3); }
 
   <!-- Sidebar -->
   <div class="sidebar">
+    <!-- Current State panel -->
+    <div class="state-panel">
+      <div class="state-panel-header" onclick="toggleStatePanel()">
+        <span class="state-panel-title">📋 Current State</span>
+        <span class="state-toggle" id="stateToggle">▲</span>
+      </div>
+      <div class="state-panel-body" id="statePanelBody">
+        <div class="state-date">📅 Today: <strong>June 21, 2026</strong></div>
+
+        <div class="state-row">
+          <span class="state-badge sb-limit">Limited</span>
+          <div><div class="state-wname">Make a Ring</div><div class="state-detail">1 seat left Jun 28 · Aug 2–5 open · LE 3,400</div></div>
+        </div>
+        <div class="state-row">
+          <span class="state-badge sb-ok">Available</span>
+          <div><div class="state-wname">One Day Ring</div><div class="state-detail">Jun 27 × 2 slots, 6 seats each · LE 900</div></div>
+        </div>
+        <div class="state-row">
+          <span class="state-badge sb-full">Sold Out</span>
+          <div><div class="state-wname">Intro to Jewelry Making</div><div class="state-detail">Jul 5–8 & Aug 23–26 sold out · New dates TBC · LE 3,400</div></div>
+        </div>
+        <div class="state-row">
+          <span class="state-badge sb-off">Cancelled</span>
+          <div><div class="state-wname">Design a Jewelry Set</div><div class="state-detail">Cancelled this cycle — no new dates yet · was LE 4,800</div></div>
+        </div>
+        <div class="state-row">
+          <span class="state-badge sb-unk">Unknown</span>
+          <div><div class="state-wname">Earrings Workshop</div><div class="state-detail">No details online — bot should defer to Rouby</div></div>
+        </div>
+        <div class="state-row">
+          <span class="state-badge sb-ok">Available</span>
+          <div><div class="state-wname">Gouache Rendering</div><div class="state-detail">Jul 19–22 (8 seats) · Aug 16–19 · LE 3,900</div></div>
+        </div>
+        <div class="state-row">
+          <span class="state-badge sb-ok">Available</span>
+          <div><div class="state-wname">Host Your Own Event</div><div class="state-detail">Private groups · LE 9,500</div></div>
+        </div>
+      </div>
+    </div>
+
     <div class="sidebar-header">
       <h2>Test Scenarios</h2>
       <p>Click a row to load the starter message, then chat freely. Supports <strong>English, Arabic & Franko-Arabic</strong> — try any! Type <strong>FEEDBACK:</strong> to log a note.</p>
@@ -758,6 +843,15 @@ function handleKey(e) {
 function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+// ── State panel toggle ────────────────────────────────────────
+function toggleStatePanel() {
+  const body = document.getElementById('statePanelBody');
+  const toggle = document.getElementById('stateToggle');
+  const hidden = body.style.display === 'none';
+  body.style.display = hidden ? '' : 'none';
+  toggle.classList.toggle('collapsed', !hidden);
 }
 
 // ── Init ──────────────────────────────────────────────────────
